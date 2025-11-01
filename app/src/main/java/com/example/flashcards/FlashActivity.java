@@ -3,9 +3,7 @@ package com.example.flashcards;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
@@ -13,23 +11,30 @@ import android.widget.LinearLayout;
 import com.example.flashcards.model.FlashCard;
 import com.example.flashcards.model.Library;
 import com.example.flashcards.model.Subject;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 
 public class FlashActivity extends AppCompatActivity {
 
-    private TextView cardText;
-    private TextView pageCounter;
+    /* UI */
+    private TextView cardText, pageCounter;
+    private View cardSurface;               // the card we drag
+    private Button nextBtn;                 // only visible after answer
+    private LinearLayout bottomIcons;       // hide while dragging
+
+    /* data */
     private List<FlashCard> cards;
     private int idx = 0;
     private boolean showAnswer = false;
-    private GestureDetector gd;
     private Subject currentSubject;
 
-    /* long-press helpers */
-    private final Handler longPressHandler = new Handler();
+    /* drag & score */
     private float downX, downY;
-    private final Runnable longPressRunnable = this::showEditDialog;
+    private int correct = 0, failed = 0;
+    private final Handler handler = new Handler();
+
+    /* constants */
+    private static final int DRAG_THRESHOLD = 150; // px
+    private static final long ANIM_DURATION = 250; // ms
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -39,81 +44,154 @@ public class FlashActivity extends AppCompatActivity {
 
         cardText    = findViewById(R.id.cardText);
         pageCounter = findViewById(R.id.pageCounter);
-        ImageButton del      = findViewById(R.id.imageButton2);
-        ImageButton addBtn   = findViewById(R.id.addButton);
-        ImageButton shuffleBtn = findViewById(R.id.shuffleButton);
+        cardSurface = findViewById(R.id.cardSurface);
+        bottomIcons = findViewById(R.id.bottomIcons);
+        nextBtn     = findViewById(R.id.nextButton);      // add this Button in XML
 
+        /* load subject */
         String title = getIntent().getStringExtra("SUBJECT_TITLE");
         for (Subject s : Library.getInstance().getSubjects()) {
             if (s.getTitle().equals(title)) {
                 currentSubject = s;
-                cards = s.getCards();
+                cards = new ArrayList<>(s.getCards()); // copy so we can shuffle
                 break;
             }
         }
-        if (currentSubject == null) {
-            Toast.makeText(this, "Subject not found", Toast.LENGTH_SHORT).show();
+        if (currentSubject == null || cards.isEmpty()) {
+            Toast.makeText(this, "No cards", Toast.LENGTH_SHORT).show();
             finish(); return;
         }
-        if (cards == null || cards.isEmpty()) {
-            cardText.setText("No cards in this subject");
-            del.setEnabled(false); del.setAlpha(0.5f);
-        } else {
-            del.setOnClickListener(v -> deleteCard());
-        }
 
-        addBtn.setOnClickListener(v -> showAddCardDialog());
-        shuffleBtn.setOnClickListener(v -> shuffleCards());
+        /* top-bar buttons */
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
+        findViewById(R.id.shuffleButton).setOnClickListener(v -> shuffleAndRestart());
+        findViewById(R.id.imageButton2).setOnClickListener(v -> deleteCurrentCard());
 
-        /* swipe detector */
-        gd = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            private static final int SWIPE_THRESHOLD = 100;
-            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        /* drag listener on the card */
+        cardSurface.setOnTouchListener(this::onCardTouch);
 
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                float diffX = e2.getX() - e1.getX();
-                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffX > 0) prev(); else next();
-                    return true;
-                }
-                return false;
-            }
+        /* long-press still works */
+        cardText.setOnLongClickListener(v -> {
+            showEditDialog();
+            return true;
         });
 
-        /* ONE touch dispatcher: swipe → tap → long-press */
-        findViewById(R.id.rootLayout).setOnTouchListener((v, event) -> {
-            boolean handled = gd.onTouchEvent(event);      // 1. swipe first
-            if (handled) return true;
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    downX = event.getX(); downY = event.getY();
-                    longPressHandler.postDelayed(longPressRunnable, 500); // 500 ms long-press threshold
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    longPressHandler.removeCallbacks(longPressRunnable);
-                    float upX = event.getX(), upY = event.getY();
-                    if (Math.abs(upX - downX) < 20 && Math.abs(upY - downY) < 20) {
-                        flip();                                    // 2. simple tap → flip
-                    }
-                    return true;
-
-                case MotionEvent.ACTION_MOVE:
-                    if (Math.abs(event.getX() - downX) > 20 || Math.abs(event.getY() - downY) > 20) {
-                        longPressHandler.removeCallbacks(longPressRunnable); // finger moved → cancel long-press
-                    }
-                    break;
-            }
-            return false;
-        });
-
-        show(); updatePageCounter();
+        showCard();
+        updateCounter();
     }
 
-    /* ---------- LONG-PRESS EDIT ---------- */
+    /* ===================== DRAG LOGIC ===================== */
+    @SuppressLint("ClickableViewAccessibility")
+    private boolean onCardTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                downX = event.getRawX();
+                downY = event.getRawY();
+                bottomIcons.setVisibility(View.INVISIBLE);
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                float deltaX = event.getRawX() - downX;
+                float deltaY = event.getRawY() - downY;
+                cardSurface.setTranslationX(deltaX);
+                cardSurface.setTranslationY(deltaY);
+                cardSurface.setAlpha(1 - Math.abs(deltaX) / 500f);
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                float dx = event.getRawX() - downX;
+                if (Math.abs(dx) > DRAG_THRESHOLD) {
+                    if (dx > 0) answerCorrect(); else answerFailed();
+                } else {
+                    springBack();           // user cancelled
+                }
+                return true;
+        }
+        return false;
+    }
+
+    /* ===================== ANSWER HANDLERS ===================== */
+    private void answerCorrect() {
+        correct++;
+        animateCardExit(true);
+    }
+
+    private void answerFailed() {
+        failed++;
+        animateCardExit(false);
+    }
+
+    private void animateCardExit(boolean toRight) {
+        float targetX = toRight ? 1000f : -1000f;
+        cardSurface.animate()
+                .translationX(targetX)
+                .alpha(0f)
+                .setDuration(ANIM_DURATION)
+                .withEndAction(this::nextCardOrFinish)
+                .start();
+    }
+
+    private void springBack() {
+        cardSurface.animate()
+                .translationX(0f)
+                .translationY(0f)
+                .alpha(1f)
+                .setDuration(ANIM_DURATION)
+                .start();
+        bottomIcons.setVisibility(View.VISIBLE);
+    }
+
+    /* ===================== NAVIGATION ===================== */
+    private void nextCardOrFinish() {
+        idx++;
+        if (idx >= cards.size()) {
+            showResult();
+            return;
+        }
+        cardSurface.setTranslationX(0f);
+        cardSurface.setAlpha(1f);
+        showCard();
+        updateCounter();
+        bottomIcons.setVisibility(View.VISIBLE);
+    }
+
+    private void showResult() {
+        String msg = (failed == 0) ? "Perfect! 🎉" : "You're doing great! Keep studying!";
+        new AlertDialog.Builder(this)
+                .setTitle("Finished")
+                .setMessage(msg + "\nCorrect: " + correct + "  Failed: " + failed)
+                .setPositiveButton("OK", (d, i) -> finish())
+                .setCancelable(false)
+                .show();
+    }
+
+    /* ===================== HELPERS ===================== */
+    private void showCard() {
+        if (cards.isEmpty()) return;
+        FlashCard c = cards.get(idx);
+        cardText.setText(showAnswer ? c.getAnswer() : c.getQuestion());
+        showAnswer = false; // reset for next card
+    }
+
+    private void updateCounter() {
+        pageCounter.setText((idx + 1) + " / " + cards.size());
+    }
+
+    private void shuffleAndRestart() {
+        Collections.shuffle(cards);
+        idx = 0; correct = 0; failed = 0;
+        showCard(); updateCounter();
+        springBack();
+    }
+
+    private void deleteCurrentCard() {
+        if (cards.isEmpty()) return;
+        cards.remove(idx);
+        if (idx >= cards.size()) idx = cards.size() - 1;
+        springBack(); showCard(); updateCounter();
+    }
+
+    /* ===================== EDIT CARD ===================== */
     private void showEditDialog() {
         if (cards == null || cards.isEmpty()) return;
         FlashCard current = cards.get(idx);
@@ -136,8 +214,7 @@ public class FlashActivity extends AppCompatActivity {
                     if (!newQ.isEmpty() && !newA.isEmpty()) {
                         current.setQuestion(newQ);
                         current.setAnswer(newA);
-                        show();              // refresh screen
-                        updatePageCounter(); // keep counter correct
+                        showCard();
                         Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Both fields required", Toast.LENGTH_SHORT).show();
@@ -145,77 +222,5 @@ public class FlashActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
-    }
-
-    /* ---------- SHUFFLE ENTIRE DECK ---------- */
-    private void shuffleCards() {
-        if (cards == null || cards.size() < 2) return;
-        Collections.shuffle(cards);
-        idx = 0; showAnswer = false; show(); updatePageCounter();
-    }
-
-    /* ---------- ADD CARD ---------- */
-    private void showAddCardDialog() {
-        EditText qEt = new EditText(this), aEt = new EditText(this);
-        qEt.setHint("Question"); aEt.setHint("Answer");
-        LinearLayout lay = new LinearLayout(this);
-        lay.setOrientation(LinearLayout.VERTICAL);
-        lay.setPadding(50, 20, 50, 20);
-        lay.addView(qEt); lay.addView(aEt);
-        new AlertDialog.Builder(this)
-                .setTitle("Add new card")
-                .setView(lay)
-                .setPositiveButton("Save", (d, i) -> {
-                    String q = qEt.getText().toString().trim();
-                    String a = aEt.getText().toString().trim();
-                    if (!q.isEmpty() && !a.isEmpty()) {
-                        currentSubject.addCard(new FlashCard(q, a));
-                        cards = currentSubject.getCards();
-                        idx = cards.size() - 1;
-                        showAnswer = false; show(); updatePageCounter();
-                    } else {
-                        Toast.makeText(this, "Both fields required", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    /* ---------- PAGE COUNTER ---------- */
-    private void updatePageCounter() {
-        if (cards == null || cards.isEmpty()) {
-            pageCounter.setText("0 / 0"); return;
-        }
-        pageCounter.setText((idx + 1) + " / " + cards.size());
-    }
-
-    /* ---------- ORIGINAL HELPERS ---------- */
-    private void show() {
-        if (cards.isEmpty()) {
-            cardText.setText("No cards left");
-            findViewById(R.id.imageButton2).setEnabled(false);
-            findViewById(R.id.imageButton2).setAlpha(0.5f);
-            return;
-        }
-        FlashCard c = cards.get(idx);
-        cardText.setText(showAnswer ? c.getAnswer() : c.getQuestion());
-    }
-    private void flip() {
-        if (cards.isEmpty()) return;
-        showAnswer = !showAnswer; show(); updatePageCounter();
-    }
-    private void next() {
-        if (cards.isEmpty()) return;
-        idx = (idx + 1) % cards.size(); showAnswer = false; show(); updatePageCounter();
-    }
-    private void prev() {
-        if (cards.isEmpty()) return;
-        idx = (idx - 1 + cards.size()) % cards.size(); showAnswer = false; show(); updatePageCounter();
-    }
-    private void deleteCard() {
-        if (cards.isEmpty()) return;
-        cards.remove(idx);
-        if (idx >= cards.size() && !cards.isEmpty()) idx = cards.size() - 1;
-        showAnswer = false; show(); updatePageCounter();
     }
 }
