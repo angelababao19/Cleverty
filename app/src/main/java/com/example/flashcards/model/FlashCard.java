@@ -10,4 +10,6 @@ public class FlashCard {
     }
     public String getQuestion() { return question; }
     public String getAnswer()   { return answer;   }
+    public void setQuestion(String q) { this.question = q; }
+    public void setAnswer(String a)   { this.answer = a;   }
 }
