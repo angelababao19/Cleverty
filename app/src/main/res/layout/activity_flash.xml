@@ -11,12 +11,13 @@
     tools:context=".FlashActivity">
 
     <!-- ===== TOP BAR ===== -->
+
     <ImageButton
         android:id="@+id/backButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:src="@drawable/abc_ic_ab_back_material"
@@ -36,11 +37,12 @@
         app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="@+id/backButton" />
 
+    <!-- ===== CARD SURFACE ===== -->
     <ImageButton
         android:id="@+id/addButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Add new card"
@@ -49,89 +51,62 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@android:color/white" />
 
-    <!-- ===== DRAGGABLE / ANIMATABLE CARD SURFACE ===== -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardSurface"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="24dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="12dp"
-        app:layout_constraintTop_toBottomOf="@id/backButton"
-        app:layout_constraintBottom_toTopOf="@id/bottomIcons"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/cardText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:padding="32dp"
-            android:text="baby shark"
-            android:textColor="#212B68"
-            android:textSize="34sp"
-            android:fontFamily="sans-serif-black"
-            android:background="#FFFFFF"/>
-    </androidx.cardview.widget.CardView>
-
-    <!-- ===== BOTTOM ICONS ===== -->
-    <LinearLayout
-        android:id="@+id/bottomIcons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+    <TextView
+        android:id="@+id/cardText"
+        android:layout_width="332dp"
+        android:layout_height="578dp"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_blue"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="32dp">
-
-        <ImageButton
-            android:id="@+id/prevButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/circle_white_24dp"
-            android:contentDescription="Previous card"
-            android:padding="14dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_arrow_prev"
-            app:tint="#212B68"
-            android:layout_marginEnd="16dp"/>
-
-        <ImageButton
-            android:id="@+id/shuffleButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/circle_white_24dp"
-            android:contentDescription="Shuffle cards"
-            android:padding="14dp"
-            android:scaleType="centerInside"
-            android:src="@android:drawable/ic_menu_rotate"
-            app:tint="#212B68"
-            android:layout_marginEnd="16dp"/>
-
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/circle_white_24dp"
-            android:contentDescription="Delete card"
-            android:padding="14dp"
-            android:scaleType="centerInside"
-            android:src="@android:drawable/ic_menu_delete"
-            app:tint="#212B68"/>
-    </LinearLayout>
-
-    <!-- ===== NEXT BUTTON (appears after answer) ===== -->
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp"
+        android:text="Card text will appear here"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/shuffleButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp"/>
+        app:layout_constraintTop_toBottomOf="@id/backButton" />
+
+    <!-- ===== BOTTOM ICONS (only 3 left) ===== -->
+
+    <ImageButton
+        android:id="@+id/prevButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Previous card"
+        android:src="@drawable/ic_arrow_prev"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/shuffleButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@android:color/white" />
+
+    <ImageButton
+        android:id="@+id/shuffleButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:contentDescription="Shuffle cards"
+        app:layout_constraintBottom_toBottomOf="@+id/prevButton"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/prevButton"
+        app:tint="@android:color/white" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Delete card"
+        app:layout_constraintBottom_toBottomOf="@+id/prevButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/shuffleButton"
+        app:tint="@android:color/white" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
