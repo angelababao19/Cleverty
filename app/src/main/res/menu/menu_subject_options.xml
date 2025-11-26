@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- This is the new "Edit" item -->
+    <item
+        android:id="@+id/menu_edit"
+        android:title="Edit" />
+
+    <!-- Add other options you might want, like Pin or Delete -->
+    <item
+        android:id="@+id/menu_pin"
+        android:title="Pin" />
+
+    <item
+        android:id="@+id/menu_delete"
+        android:title="Delete" />
+
+</menu>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#2E3983"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- THIS IS THE TEXTVIEW THE ADAPTER IS LOOKING FOR -->
+        <TextView
+            android:id="@+id/subject_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Computer Science" />
+
+        <!-- THIS IS THE SECOND TEXTVIEW THE ADAPTER NEEDS -->
+        <TextView
+            android:id="@+id/card_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#C1C1C1"
+            android:textSize="14sp"
+            tools:text="24 cards" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

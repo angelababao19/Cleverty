@@ -12,6 +12,7 @@ public class AddCardActivity extends AppCompatActivity {
 
     private EditText subjectInput;
     private QaAdapter adapter;
+    private int editingPos = -1;   // -1 = create new, >=0 = edit existing
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,33 +27,46 @@ public class AddCardActivity extends AppCompatActivity {
         qaList.setLayoutManager(new LinearLayoutManager(this));
         qaList.setAdapter(adapter);
 
-        saveBtn.setOnClickListener(v -> saveAndExit());
+        /* ---------- EDIT MODE ? ---------- */
+        editingPos = getIntent().getIntExtra("SUBJECT_POSITION", -1);
+        if (editingPos != -1) {                 // we are editing
+            Subject subj = Library.getInstance().getSubjects().get(editingPos);
+            subjectInput.setText(subj.getTitle());
+            for (FlashCard card : subj.getCards()) {
+                adapter.addRow(card.getQuestion(), card.getAnswer());
+            }
+            adapter.setEditMode(true);          // flag adapter
+            adapter.addRow("", "");             // ONE blank at bottom
+        } else {
+            /* new deck – normal behaviour */
+            if (adapter.getItemCount() == 0) adapter.addRow("", "");
+        }
 
-        /* white back arrow - close screen */
+        saveBtn.setOnClickListener(v -> saveAndExit());
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
     }
 
     private void saveAndExit() {
-        // 1. Get the text from the input field and remove any leading/trailing whitespace.
         String title = subjectInput.getText().toString().trim();
-
-        // 2. Check if the resulting title is empty.
         if (title.isEmpty()) {
-            // 3. If it's empty, show a message to the user and stop executing the method.
             Toast.makeText(this, "Subject required", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // If the title is valid, proceed to create the subject and add cards.
-        Subject subject = new Subject(title);
-        for (QaAdapter.Row row : adapter.getCompletedCards()) {
-            subject.addCard(new FlashCard(row.q, row.a));
-        }
-        if (subject.getCards().isEmpty()) {
+        if (adapter.getCompletedCards().isEmpty()) {
             Toast.makeText(this, "Add at least one Q/A pair", Toast.LENGTH_SHORT).show();
             return;
         }
-        Library.getInstance().addSubject(subject);
-        finish(); // Close the activity and return to the main screen.
+
+        Subject updated = new Subject(title);
+        for (QaAdapter.Row row : adapter.getCompletedCards()) {
+            updated.addCard(new FlashCard(row.q, row.a));
+        }
+
+        if (editingPos == -1) {
+            Library.getInstance().addSubject(updated);
+        } else {
+            Library.getInstance().getSubjects().set(editingPos, updated);
+        }
+        finish();
     }
 }

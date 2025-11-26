@@ -1,5 +1,6 @@
 package com.example.flashcards;
 
+import android.content.Intent;
 import android.view.*;
 import android.widget.*;
 import androidx.annotation.NonNull;
@@ -47,12 +48,13 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.Holder> 
         /* normal tap - open flash-cards */
         h.itemView.setOnClickListener(v -> listener.clicked(s));
 
-        /* long-press - Pin / Unpin / Delete */
+        /* long-press - Pin / Unpin / Edit / Delete */
         h.itemView.setOnLongClickListener(v -> {
             PopupMenu popup = new PopupMenu(v.getContext(), v);
             boolean pinned = isPinned(s);
-            popup.getMenu().add(pinned ? "Unpin" : "Pin");
-            popup.getMenu().add("Delete");
+            popup.getMenu().add(pinned ? "Unpin" : "Pin");   // 1st
+            popup.getMenu().add("Edit");                      // 2nd
+            popup.getMenu().add("Delete");                    // 3rd
             popup.setOnMenuItemClickListener(item -> {
                 String title = item.getTitle().toString();
                 switch (title) {
@@ -61,14 +63,19 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.Holder> 
                         notifyDataSetChanged();
                         return true;
                     case "Unpin":
-                        /* move to bottom → unpinned */
                         Library.getInstance().getSubjects().remove(s);
                         Library.getInstance().getSubjects().add(s);
                         notifyDataSetChanged();
                         return true;
+                    case "Edit":
+                        Intent intent = new Intent(v.getContext(), AddCardActivity.class);
+                        intent.putExtra("SUBJECT_POSITION", Library.getInstance().getSubjects().indexOf(s));
+                        v.getContext().startActivity(intent);
+                        return true;
                     case "Delete":
                         Library.getInstance().getSubjects().remove(s);
                         notifyDataSetChanged();
+                        ((MainActivity)v.getContext()).refreshEmptyState();
                         return true;
                 }
                 return false;
