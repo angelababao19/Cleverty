@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">  <!-- This adds space below each Q&A item -->
+
+    <!-- Question EditText -->
+    <EditText
+        android:id="@+id/questionEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/square_white_stroke"
+        android:hint="Question"
+        android:layout_marginTop="31dp"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#AFAFAF" />
+
+    <!-- Answer EditText -->
+    <EditText
+        android:id="@+id/answerEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/square_white_stroke"
+        android:hint="Answer"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#AFAFAF" />
+
+</LinearLayout>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    tools:context=".CongratulationsActivity">
+
+    <!-- Progress Bar Container (no changes here) -->
+    <FrameLayout
+        android:id="@+id/progressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="109dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp">
+        <LinearLayout
+            android:id="@+id/finalProgressLines"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+    </FrameLayout>
+
+    <!-- Main Content Area -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/img_2"
+            android:contentDescription="Trophy" />
+
+        <!-- ========================================================== -->
+        <!--  START: This is the section that has been changed           -->
+        <!-- ========================================================== -->
+
+        <!-- This TextView is for the "Perfect!" message -->
+        <TextView
+            android:id="@+id/perfectTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Perfect!"
+            android:textColor="@android:color/white"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <!-- This TextView is for the main "Congratulations!" or "Keep Practicing!" message -->
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Congratulations!"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- ======================================================== -->
+        <!--  END: End of the changed section                          -->
+        <!-- ======================================================== -->
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="You've finished the deck."
+            android:textColor="#C1C1C1"
+            android:textSize="18sp" />
+
+        <!-- RESULT SECTION (no changes here) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:background="@drawable/rounded_blue"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/correctText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#00FF12"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="Correct: 8" />
+
+            <TextView
+                android:id="@+id/wrongText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="#F44336"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="Wrong: 2" />
+        </LinearLayout>
+
+        <!-- BUTTONS SECTION (no changes here) -->
+        <Button
+            android:id="@+id/tryAgainButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Go Back" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Review Wrong Answers" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -9,4 +9,7 @@
     <color name="timer_background_violet">#4C4A8A</color>
     <color name="grey_button">#A8A7C4</color>
     <color name="timer_input_hint">#A8A7C4</color>
+    <color name="Green">#32F432</color>
+    <color name="Red">#FF0000</color>
+    <color name="Yellow">#FFFF00</color>
 </resources>

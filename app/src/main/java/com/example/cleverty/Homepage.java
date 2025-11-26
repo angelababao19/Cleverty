@@ -3,83 +3,96 @@ package com.example.cleverty;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
+import android.widget.ImageButton;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
+// It looks like you might have moved these model classes into the main package.
+// If Subject, Library, etc. are still in a 'model' sub-package, you'll need to adjust this import.
+// For example: import com.example.cleverty.model.*;
+import com.example.cleverty.model.Subject;
+import com.example.cleverty.model.Library;
+import com.example.cleverty.SubjectAdapter;
+import com.example.cleverty.AddCardActivity;
+import com.example.cleverty.FlashActivity;
+
 
 public class Homepage extends AppCompatActivity {
 
-    // UI Views
-    private RecyclerView recentDecksRecyclerView;
-    private LinearLayout emptyStateLayout;
-    private Button createDeckButton;
+    // UI Views from both projects
     private BottomNavigationView bottomNav;
+    private RecyclerView grid;
+    private TextView emptyTxt;
+    private ImageButton addBtn;
+    private SubjectAdapter adapter;
 
-    // Firebase
-    private DatabaseReference userDecksRef;
-    private FirebaseAuth firebaseAuth;
-
-    // --- UNCOMMENTED AND INITIALIZED ---
-    private DeckAdapter deckAdapter;
-    private ArrayList<Deck> deckList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        // --- Initialize Views ---
-        recentDecksRecyclerView = findViewById(R.id.recent_decks_recyclerview);
-        emptyStateLayout = findViewById(R.id.empty_state_layout);
-        createDeckButton = findViewById(R.id.create_deck_button);
+        // --- Initialize ALL views from your layout ---
+        grid     = findViewById(R.id.subjectGrid);
+        emptyTxt = findViewById(R.id.emptyTxt);
+        // Make sure the ID in your XML is 'add_deck_button' as we created in the merged layout
+        addBtn   = findViewById(R.id.imageButton);
         bottomNav = findViewById(R.id.bottomNav);
 
-        // --- Setup Firebase ---
-        firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null) {
-            userDecksRef = FirebaseDatabase.getInstance().getReference("users")
-                    .child(firebaseAuth.getCurrentUser().getUid()).child("decks");
-        }
 
-        // --- Setup Click Listeners ---
-        setupClickListeners();
+        // --- Setup Listeners and Adapters ---
 
-        // --- Setup RecyclerView ---
-        setupRecyclerView();
+        // This is from your teammate's code
+        addBtn.setOnClickListener(v ->
+                startActivity(new Intent(Homepage.this, AddCardActivity.class)));
 
-        // --- Load Data ---
-        loadDecksFromFirebase();
+        // This is also from your teammate's code
+        // It initializes the adapter to show the decks
+        adapter = new SubjectAdapter(Library.getInstance().getSubjects(), this::openSubject);
+        grid.setAdapter(adapter);
 
+        // --- This is your code, now correctly called ---
+        setupBottomNavigation();
+
+        // Initial check to see if the list is empty
+        refreshEmptyState();
     }
 
-    private void setupClickListeners() {
-        createDeckButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Homepage.this, CreateDeckActivity.class);
-            startActivity(intent);
-        });
+    // This method is called when the activity becomes visible again
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // This is from your teammate's code. It refreshes the list when you come back to this screen.
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+        refreshEmptyState();
+    }
 
-        // Setup Bottom Navigation
+    // Method from your teammate's code to open a deck
+    private void openSubject(Subject subject) {
+        Intent i = new Intent(this, FlashActivity.class);
+        i.putExtra("SUBJECT_TITLE", subject.getTitle());
+        startActivity(i);
+    }
+
+    // Method from your teammate's code to show/hide the "empty" text.
+    // It is now correctly part of the Homepage class.
+    void refreshEmptyState() {
+        boolean has = !Library.getInstance().getSubjects().isEmpty();
+        grid.setVisibility(has ? View.VISIBLE : View.GONE);
+        emptyTxt.setVisibility(has ? View.GONE : View.VISIBLE);
+    }
+
+    // Your method for setting up the bottom navigation bar
+    private void setupBottomNavigation() {
         bottomNav.setSelectedItemId(R.id.nav_home);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
+                // Already on the home screen, do nothing
                 return true;
             } else if (itemId == R.id.nav_timer) {
                 startActivity(new Intent(getApplicationContext(), Timer.class));
@@ -91,53 +104,6 @@ public class Homepage extends AppCompatActivity {
                 return true;
             }
             return false;
-        });
-    }
-
-    private void setupRecyclerView() {
-        recentDecksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // --- UNCOMMENTED AND IMPLEMENTED ---
-        deckList = new ArrayList<>();
-        deckAdapter = new DeckAdapter(this, deckList);
-        recentDecksRecyclerView.setAdapter(deckAdapter);
-    }
-
-    private void loadDecksFromFirebase() {
-        if (userDecksRef == null) {
-            emptyStateLayout.setVisibility(View.VISIBLE);
-            recentDecksRecyclerView.setVisibility(View.GONE);
-            return;
-        }
-
-        userDecksRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // --- UNCOMMENTED AND IMPLEMENTED ---
-                deckList.clear(); // Clear the old list before adding new data
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Deck deck = snapshot.getValue(Deck.class);
-                    if (deck != null) {
-                        deckList.add(deck);
-                    }
-                }
-
-                // Check if the list is empty
-                if (deckList.isEmpty()) {
-                    recentDecksRecyclerView.setVisibility(View.GONE);
-                    emptyStateLayout.setVisibility(View.VISIBLE);
-                } else {
-                    recentDecksRecyclerView.setVisibility(View.VISIBLE);
-                    emptyStateLayout.setVisibility(View.GONE);
-                    // Notify the adapter that the data set has changed so it can update the UI
-                    deckAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(Homepage.this, "Failed to load decks: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
         });
     }
 }

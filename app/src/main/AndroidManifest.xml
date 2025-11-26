@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cleverty">
         <activity
-            android:name=".CreateDeckActivity"
+            android:name=".FlashActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddCardActivity"
             android:exported="false" />
         <activity
             android:name=".TermsPage"
