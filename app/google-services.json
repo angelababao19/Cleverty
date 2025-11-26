@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "428721070030",
+    "project_id": "cleverty-6bf3f",
+    "storage_bucket": "cleverty-6bf3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428721070030:android:f481e61e550a42b160d59f",
+        "android_client_info": {
+          "package_name": "com.example.cleverty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpr9ai3o8PYzx8wm5waydmVhybdx_L2YU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

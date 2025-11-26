@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    tools:context=".Timer">
+
+    <!-- Your existing "Timer" title -->
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="Timer"
+        android:textAllCaps="false"
+        android:textColor="#fff"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ===================== START: POMODORO UI ===================== -->
+
+    <!-- CardView to contain the timer display -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/timer_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:cardBackgroundColor="@color/timer_background_violet"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView1"
+        app:layout_constraintVertical_bias="0.15">
+
+        <!-- USE A RELATIVELAYOUT TO OVERLAY VIEWS CORRECTLY -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
+            <!-- Circular Progress Indicator for the timer -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_circular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                app:indicatorColor="@color/white"
+                app:indicatorSize="200dp"
+                app:trackColor="#60FFFFFF"
+                app:trackCornerRadius="5dp"
+                app:trackThickness="8dp"
+                tools:progress="60" />
+
+            <!-- The countdown timer text, placed over the progress bar -->
+            <TextView
+                android:id="@+id/timer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="sans-serif-light"
+                android:text="25:00"
+                android:textColor="@color/white"
+                android:textSize="60sp" />
+            <!-- No more translationY needed! -->
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- TextView to show the current session status -->
+    <TextView
+        android:id="@+id/session_status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Focus"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timer_card" />
+
+    <TextView
+        android:id="@+id/session_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif"
+        android:textColor="#A8A7C4"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/session_status_text"
+        tools:text="Sessions: 0/4" />
+
+    <!-- LinearLayout to hold the action buttons -->
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/session_count_text">
+
+        <!-- Reset Button -->
+        <Button
+            android:id="@+id/reset_button"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_reset"
+            app:iconSize="32dp"
+            app:iconTint="@color/grey_button" />
+
+        <!-- Start/Pause Button (Main Action) -->
+        <Button
+            android:id="@+id/start_pause_button"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/white"
+            android:text="START"
+            android:textColor="@color/blue"
+            android:textSize="18sp"
+            app:cornerRadius="16dp" />
+
+        <!-- Skip Button -->
+        <Button
+            android:id="@+id/skip_button"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_skip"
+            app:iconSize="32dp"
+            app:iconTint="@color/grey_button" />
+
+    </LinearLayout>
+
+    <!-- ====================== END: POMODORO UI ====================== -->
+
+    <!-- ========== START: NEW CUSTOMIZATION INPUTS LAYOUT ========== -->
+    <LinearLayout
+        android:id="@+id/customization_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttons_layout">
+
+        <!-- LinearLayout for two input fields -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Focus Time Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Timer.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Focus (min)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/focus_time_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="25"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Break Time Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Timer.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="Break (min)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/break_time_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="5"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/save_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/violet"
+            android:text="Apply Settings"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+    <!-- =========== END: NEW CUSTOMIZATION INPUTS LAYOUT =========== -->
+
+    <!-- Your existing BottomNavigationView -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/violet"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:itemActiveIndicatorStyle="@style/App.ActiveIndicator"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

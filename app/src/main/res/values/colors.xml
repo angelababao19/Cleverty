@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="blue">#1A143A</color>
+    <color name="pink">#E07EDB</color>
+    <color name="violet">#5240A0</color>
+    <color name="timer_background_violet">#4C4A8A</color>
+    <color name="grey_button">#A8A7C4</color>
+    <color name="timer_input_hint">#A8A7C4</color>
+</resources>

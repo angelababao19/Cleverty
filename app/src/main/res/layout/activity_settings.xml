@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    android:orientation="vertical"
+    tools:context=".Settings">
+
+    <!-- ======================= FIXED HEADER ======================= -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingTop="8dp">
+
+        <ImageView
+            android:id="@+id/goBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="8dp"
+            android:src="@drawable/img_1" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif"
+            android:text="Settings"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    <!-- ===================== END OF FIXED HEADER ===================== -->
+
+    <!-- Scrollable area for all the settings options -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- Share Section -->
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="Share"
+                android:textStyle="bold" />
+
+            <include
+                android:id="@+id/rate_us_button"
+                layout="@layout/settings_option_item" />
+
+            <include
+                android:id="@+id/follow_x_button"
+                layout="@layout/settings_option_item" />
+
+            <include
+                android:id="@+id/like_fb_button"
+                layout="@layout/settings_option_item" />
+
+            <!-- Contact Us Section -->
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="Contact Us" />
+
+            <include
+                android:id="@+id/help_button"
+                layout="@layout/settings_option_item" />
+
+            <include
+                android:id="@+id/terms_button"
+                layout="@layout/settings_option_item" />
+
+            <include
+                android:id="@+id/privacy_button"
+                layout="@layout/settings_option_item" />
+
+            <!-- Danger Zone Section -->
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="Danger Zone" />
+
+            <include
+                android:id="@+id/delete_account_button"
+                layout="@layout/settings_option_item" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- LOG OUT Button at the bottom -->
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="#E91E63"
+        android:text="LOG OUT"
+        android:textColor="@color/white"
+        app:cornerRadius="12dp"/>
+
+    <!-- ======================= FOOTER ======================= -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Version 1"
+        android:textColor="#A8A7C4"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="© 2025 Cleverty"
+        android:textColor="#A8A7C4"
+        android:textSize="12sp" />
+    <!-- =================== END OF FOOTER ==================== -->
+
+</LinearLayout>

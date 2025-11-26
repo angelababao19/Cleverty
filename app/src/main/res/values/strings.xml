@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Cleverty</string>
+    <string name="terms_and_privacy_content"><![CDATA[
+        <b>LAST UPDATED: November 1, 2025</b><br/><br/>
+
+        Welcome to <b>Cleverty!</b><br/><br/>
+
+        By using our app, you agree to these Terms of Service and consent to our Privacy Policy.<br/><br/>
+
+        <b>Terms of Service</b><br/><br/>
+
+        <b>1. Use of the App</b><br/>
+        You agree to use this app only for its intended purpose as a study buddy. You must not misuse the service...<br/><br/>
+
+        <b>2. User Accounts</b><br/>
+        You are responsible for safeguarding your account and password. You agree not to disclose your password to any third party...<br/><br/>
+
+        <b>Privacy Policy</b><br/><br/>
+
+        <b>1. Information We Collect</b><br/>
+        We collect information you provide directly to us when you create an account, such as your email address. We also collect the content you create, like tasks, descriptions, and deadlines.<br/><br/>
+
+        <b>2. How We Use Information</b><br/>
+        We use the information we collect to provide, maintain, and improve our services. We will not share your personal information with third parties except as described in this Privacy Policy...<br/><br/>
+
+        <b>3. Data Deletion</b><br/>
+        You can delete your account and associated data at any time...<br/><br/>
+
+        <b>Contact Us</b><br/><br/>
+        If you have any questions about these Terms or our Privacy Policy, please contact us at cleverty@gmail.com.
+    ]]></string>
+    <string name="session_count_format">Focus Sessions: %d</string>
+</resources>

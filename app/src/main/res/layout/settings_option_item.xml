@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><!-- This is our custom button -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/settings"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="70dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <!-- REMOVED: android:gravity="center_vertical" from the parent -->
+
+    <ImageView
+        android:id="@+id/item_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        app:tint="@color/white"
+        tools:src="@drawable/ic_star" />
+
+    <TextView
+        android:id="@+id/item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/item_icon"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        tools:text="Rate us on the Play Store" />
+
+</RelativeLayout>
