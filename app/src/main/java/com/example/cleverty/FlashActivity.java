@@ -1,11 +1,15 @@
 package com.example.cleverty;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -63,7 +67,7 @@ public class FlashActivity extends AppCompatActivity {
         swipeWrapper = findViewById(R.id.swipeWrapper);
         emptyText = findViewById(R.id.emptyText);
         ImageButton del = findViewById(R.id.imageButton2);
-        ImageButton editBtn = findViewById(R.id.editButton); // Find the new edit button
+        ImageButton editBtn = findViewById(R.id.editButton);
         ImageButton shuffleBtn = findViewById(R.id.shuffleButton);
         ImageButton prevBtn = findViewById(R.id.prevButton);
 
@@ -90,7 +94,7 @@ public class FlashActivity extends AppCompatActivity {
             restartSession();
         });
         del.setOnClickListener(v -> deleteCurrentCard());
-        editBtn.setOnClickListener(v -> showEditCardDialog()); // Set listener for the edit button
+        editBtn.setOnClickListener(v -> showEditCardDialog());
         prevBtn.setOnClickListener(v -> prev());
         setupTouchListener();
 
@@ -98,70 +102,101 @@ public class FlashActivity extends AppCompatActivity {
         restartSession();
     }
 
-    /**
-     * NEW METHOD: Displays a dialog to edit the current card's question and answer.
-     */
+    // =========================== THIS IS THE FIX ===========================
+    // This block MUST be present and correct for the "Review" feature to work.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check if the result is coming from our CongratulationsActivity
+        if (requestCode == REVIEW_REQUEST_CODE) {
+            // Check if the user clicked "Review Wrong Answers" (RESULT_OK)
+            if (resultCode == RESULT_OK && data != null) {
+                // Get the list of wrong cards sent back
+                ArrayList<FlashCard> reviewCards = (ArrayList<FlashCard>) data.getSerializableExtra("REVIEW_CARDS");
+
+                if (reviewCards != null && !reviewCards.isEmpty()) {
+                    // If there are cards to review, update our current list and restart the session
+                    this.cards = reviewCards;
+                    restartSession();
+                } else {
+                    // If the review list is empty for some reason, just finish.
+                    finish();
+                }
+            } else {
+                // If the user clicked "Go Back" or pressed the back button (RESULT_CANCELED), finish.
+                finish();
+            }
+        }
+    }
+    // =======================================================================
+
+
+    private void next(boolean wasCorrect) {
+        if (noCards) return;
+        if (wasCorrect) correctCount++; else wrongCount++;
+        answerHistory.add(wasCorrect);
+        updateProgressLines();
+
+        idx++;
+
+        // When the deck is finished...
+        if (idx >= cards.size()) {
+            Intent intent = new Intent(this, CongratulationsActivity.class);
+            intent.putExtra("CORRECT_COUNT", correctCount);
+            intent.putExtra("WRONG_COUNT", wrongCount);
+            intent.putExtra("ALL_CARDS", (ArrayList<FlashCard>) cards);
+            intent.putExtra("ANSWER_HISTORY", (ArrayList<Boolean>) answerHistory);
+
+            // =========================== THIS IS THE FIX ===========================
+            // We MUST use startActivityForResult here so that onActivityResult is triggered.
+            startActivityForResult(intent, REVIEW_REQUEST_CODE);
+            // =======================================================================
+
+        } else {
+            // There are still cards left, so show the next one
+            showAnswer = false;
+            showCard();
+            updatePageCounter();
+        }
+    }
+
+    // ... The rest of your methods (restartSession, prev, setupTouchListener, etc.) are correct and do not need to be changed ...
+
     private void showEditCardDialog() {
         if (noCards || cards.isEmpty()) {
             Toast.makeText(this, "There are no cards to edit.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Inflate the custom layout for the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_card, null);
+        builder.setView(dialogView);
         final EditText editQuestion = dialogView.findViewById(R.id.editQuestion);
         final EditText editAnswer = dialogView.findViewById(R.id.editAnswer);
-
-        // Get the current card and pre-fill the EditTexts with its text.
+        final Button buttonCancel = dialogView.findViewById(R.id.button_cancel);
+        final Button buttonSave = dialogView.findViewById(R.id.button_save);
         FlashCard currentCard = cards.get(idx);
         editQuestion.setText(currentCard.getQuestion());
         editAnswer.setText(currentCard.getAnswer());
-
-        // Create and show the dialog.
-        new AlertDialog.Builder(this)
-                .setTitle("Edit Card")
-                .setView(dialogView)
-                .setPositiveButton("Save", (dialog, which) -> {
-                    String newQuestion = editQuestion.getText().toString().trim();
-                    String newAnswer = editAnswer.getText().toString().trim();
-
-                    if (!newQuestion.isEmpty() && !newAnswer.isEmpty()) {
-                        // Update the FlashCard object with the new text.
-                        currentCard.setQuestion(newQuestion);
-                        currentCard.setAnswer(newAnswer);
-
-                        // Refresh the currently displayed card to show the changes.
-                        showCard();
-                        Toast.makeText(this, "Card updated", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Fields cannot be empty.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    // --- The rest of your FlashActivity.java code remains the same ---
-    // (onActivityResult, restartSession, next, prev, etc.)
-    // ... paste the rest of your working FlashActivity code here ...
-    // The following is provided for completeness.
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REVIEW_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && data != null) {
-                ArrayList<FlashCard> reviewCards = (ArrayList<FlashCard>) data.getSerializableExtra("REVIEW_CARDS");
-                if (reviewCards != null && !reviewCards.isEmpty()) {
-                    this.cards = reviewCards;
-                    restartSession();
-                } else {
-                    finish();
-                }
-            } else {
-                finish();
-            }
+        final AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
+        buttonCancel.setOnClickListener(v -> dialog.dismiss());
+        buttonSave.setOnClickListener(v -> {
+            String newQuestion = editQuestion.getText().toString().trim();
+            String newAnswer = editAnswer.getText().toString().trim();
+            if (!newQuestion.isEmpty() && !newAnswer.isEmpty()) {
+                currentCard.setQuestion(newQuestion);
+                currentCard.setAnswer(newAnswer);
+                showCard();
+                Toast.makeText(this, "Card updated", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(this, "Fields cannot be empty.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.show();
     }
 
     private void restartSession() {
@@ -181,27 +216,6 @@ public class FlashActivity extends AppCompatActivity {
             buildProgressLines();
             updateProgressLines();
         }
-    }
-
-    private void next(boolean wasCorrect) {
-        if (noCards) return;
-        if (wasCorrect) correctCount++; else wrongCount++;
-        answerHistory.add(wasCorrect);
-
-        if (idx == cards.size() - 1) {
-            Intent intent = new Intent(this, CongratulationsActivity.class);
-            intent.putExtra("CORRECT_COUNT", correctCount);
-            intent.putExtra("WRONG_COUNT", wrongCount);
-            intent.putExtra("ALL_CARDS", (ArrayList<FlashCard>) cards);
-            intent.putExtra("ANSWER_HISTORY", (ArrayList<Boolean>) answerHistory);
-            startActivityForResult(intent, REVIEW_REQUEST_CODE);
-            return;
-        }
-        idx++;
-        showAnswer = false;
-        showCard();
-        updatePageCounter();
-        updateProgressLines();
     }
 
     private void prev() {
@@ -256,7 +270,7 @@ public class FlashActivity extends AppCompatActivity {
                 .withEndAction(() -> {
                     swipeWrapper.setTranslationX(0f);
                     swipeWrapper.setAlpha(1f);
-                    next(dx > 0); // true if swipe right (correct)
+                    next(dx > 0);
                 })
                 .start();
     }
@@ -278,6 +292,7 @@ public class FlashActivity extends AppCompatActivity {
             progressLines.addView(line);
         }
     }
+
     private void updateProgressLines() {
         if (noCards) return;
         for (int i = 0; i < progressLines.getChildCount(); i++) {
@@ -289,6 +304,7 @@ public class FlashActivity extends AppCompatActivity {
             }
         }
     }
+
     private void showEmptyState() {
         noCards = true;
         cardContainer.setVisibility(View.GONE);
@@ -296,13 +312,50 @@ public class FlashActivity extends AppCompatActivity {
         updatePageCounter();
         progressLines.removeAllViews();
     }
+
     private void deleteCurrentCard() {
+        if (noCards) return;
+        showConfirmationDialog(
+                "Are you sure you want to delete this card?",
+                this::performCardDeletion
+        );
+    }
+
+    private void performCardDeletion() {
         if (noCards) return;
         currentSubject.getCards().remove(cards.get(idx));
         cards.remove(idx);
         if (idx >= cards.size() && idx > 0) {
             idx = cards.size() - 1;
         }
-        restartSession();
+        if (cards.isEmpty()) {
+            showEmptyState();
+            Toast.makeText(this, "Card deleted. Deck is now empty.", Toast.LENGTH_SHORT).show();
+            new android.os.Handler().postDelayed(this::finish, 1000);
+        } else {
+            showCard();
+            updatePageCounter();
+            buildProgressLines();
+            updateProgressLines();
+            Toast.makeText(this, "Card deleted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showConfirmationDialog(String message, Runnable onYesAction) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_confirmation);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        TextView dialogMessage = dialog.findViewById(R.id.dialog_message);
+        Button buttonYes = dialog.findViewById(R.id.button_yes);
+        Button buttonNo = dialog.findViewById(R.id.button_no);
+        dialogMessage.setText(message);
+        buttonYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            onYesAction.run();
+        });
+        buttonNo.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 }

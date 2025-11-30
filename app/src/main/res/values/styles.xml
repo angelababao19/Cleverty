@@ -52,6 +52,17 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="Widget.App.TextInputLayout.OnLight" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <!-- Color of the outline when the box is focused -->
+        <item name="boxStrokeColor">@color/violet</item>
+        <!-- Color of the hint text when it's floating above -->
+        <item name="hintTextColor">@color/violet</item>
+        <!-- Color of the text the user types -->
+        <item name="android:textColor">@color/black</item>
+        <!-- Color of the hint text when it's inside the box -->
+        <item name="android:textColorHint">@android:color/darker_gray</item>
+    </style>
+
     <!-- =================== END: STAT CARD STYLES =================== -->
 
     <style name="SettingsSectionHeader" parent="Widget.AppCompat.TextView">
@@ -66,4 +77,59 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <!-- ================== START: NEW STYLE FOR FLASHCARD ICONS ================== -->
+    <style name="FlashcardIconButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:tint">@android:color/white</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    <!-- =================== END: NEW STYLE FOR FLASHCARD ICONS =================== -->
+
+        <!-- ================== START: FAQ CARD STYLES ================== -->
+        <style name="FaqCard" parent="Widget.Material3.CardView.Filled">
+            <item name="android:layout_width">match_parent</item>
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_marginTop">16dp</item>
+            <item name="cardBackgroundColor">@color/timer_background_violet</item>
+            <item name="cardCornerRadius">12dp</item>
+        </style>
+
+        <style name="FaqCard.Content" parent="">
+            <item name="android:layout_width">match_parent</item>
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:orientation">vertical</item>
+            <item name="android:padding">16dp</item>
+        </style>
+
+        <style name="FaqCard.Question" parent="Widget.AppCompat.TextView">
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:textColor">@color/white</item>
+            <item name="android:textSize">16sp</item>
+            <item name="android:textStyle">bold</item>
+        </style>
+
+        <style name="FaqCard.Answer" parent="Widget.AppCompat.TextView">
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_marginTop">8dp</item>
+            <item name="android:textColor">#A8A7C4</item>
+            <item name="android:textSize">14sp</item>
+            <item name="android:lineSpacingMultiplier">1.2</item>
+        </style>
+        <!-- =================== END: FAQ CARD STYLES =================== -->
+
+    <style name="ShapeAppearance.App.Circle" parent="">
+        <item name="cornerFamily">rounded</item><item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.App.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="strokeColor">@color/violet</item>
+    </style>
+
 </resources>

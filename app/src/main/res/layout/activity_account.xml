@@ -48,6 +48,7 @@
         android:layout_height="140dp"
         android:layout_marginTop="48dp"
         app:cardCornerRadius="70dp"
+        app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView1">
@@ -57,8 +58,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:src="@drawable/default_profile"
             tools:src="@drawable/default_profile" />
     </androidx.cardview.widget.CardView>
+
+    <!-- ===================== THIS IS THE NEW BUTTON ===================== -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/change_profile_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit_camera"
+        app:backgroundTint="@color/pink"
+        app:fabSize="mini"
+        app:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_image_card"
+        app:layout_constraintEnd_toEndOf="@+id/profile_image_card"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"/>
+    <!-- ==================================================================== -->
+
 
     <!-- User Details Section -->
     <LinearLayout
@@ -115,89 +132,7 @@
             tools:text="your.email@example.com" />
     </LinearLayout>
 
-    <!-- ===================== START: NEW STATS SECTION ===================== -->
-    <LinearLayout
-        android:id="@+id/stats_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_details_layout">
-
-        <!-- Stat Item 1: Current Streak -->
-        <androidx.cardview.widget.CardView
-            style="@style/StatCard"
-            android:layout_marginEnd="8dp">
-
-            <LinearLayout style="@style/StatCard.LinearLayout">
-
-                <ImageView
-                    style="@style/StatCard.Icon"
-                    android:src="@drawable/ic_streak" />
-
-                <TextView
-                    android:id="@+id/current_streak_value"
-                    style="@style/StatCard.Value"
-                    tools:text="14" />
-
-                <TextView
-                    style="@style/StatCard.Label"
-                    android:text="Day Streak" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Stat Item 2: Total Sessions -->
-        <androidx.cardview.widget.CardView
-            style="@style/StatCard"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp">
-
-            <LinearLayout style="@style/StatCard.LinearLayout">
-
-                <ImageView
-                    style="@style/StatCard.Icon"
-                    android:src="@drawable/ic_timer1" />
-
-                <TextView
-                    android:id="@+id/total_sessions_value"
-                    style="@style/StatCard.Value"
-                    tools:text="128" />
-
-                <TextView
-                    style="@style/StatCard.Label"
-                    android:text="Sessions" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Stat Item 3: Cleverty Points -->
-        <androidx.cardview.widget.CardView
-            style="@style/StatCard"
-            android:layout_marginStart="8dp">
-
-            <LinearLayout style="@style/StatCard.LinearLayout">
-
-                <ImageView
-                    style="@style/StatCard.Icon"
-                    android:src="@drawable/ic_star" />
-
-                <TextView
-                    android:id="@+id/cleverty_points_value"
-                    style="@style/StatCard.Value"
-                    tools:text="1280" />
-
-                <TextView
-                    style="@style/StatCard.Label"
-                    android:text="Points" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-    <!-- ====================== END: NEW STATS SECTION ====================== -->
-
-    <!-- ProgressBar for loading data -->
+    <!-- ===================== ADD THIS PROGRESS BAR ===================== -->
     <ProgressBar
         android:id="@+id/account_progress_bar"
         android:layout_width="wrap_content"
@@ -207,9 +142,9 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stats_layout"
+        app:layout_constraintTop_toBottomOf="@+id/user_details_layout"
         tools:visibility="visible" />
-
+    <!-- ================================================================= -->
 
     <!-- Your Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

@@ -13,16 +13,13 @@
     <!-- ===== TOP BAR ===== -->
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/FlashcardIconButton"
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
-        android:src="@drawable/abc_ic_ab_back_material"
+        android:src="@drawable/ic_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@android:color/white" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/pageCounter"
@@ -39,16 +36,13 @@
 
     <ImageButton
         android:id="@+id/editButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/FlashcardIconButton"
         android:layout_marginEnd="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Edit current card"
-        android:src="@android:drawable/ic_menu_edit"
+        android:src="@drawable/ic_edit"
         app:layout_constraintBottom_toBottomOf="@+id/backButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/backButton"
-        app:tint="@android:color/white" />
+        app:layout_constraintTop_toTopOf="@+id/backButton" />
 
     <!-- ===== PROGRESS LINES ===== -->
     <LinearLayout
@@ -105,8 +99,7 @@
 
     </FrameLayout>
 
-    <!-- ===== FIX: TEXT HINTS MOVED OUTSIDE OF swipeWrapper ===== -->
-    <!-- These TextViews are now part of the main layout and will not move. -->
+    <!-- ===== TEXT HINTS ===== -->
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -136,44 +129,35 @@
     <!-- ===== BOTTOM ICONS ===== -->
     <ImageButton
         android:id="@+id/prevButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/FlashcardIconButton"
         android:layout_marginBottom="32dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Previous card"
         android:src="@drawable/ic_arrow_prev"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/shuffleButton"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="@android:color/white" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/shuffleButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/FlashcardIconButton"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Shuffle cards"
-        android:src="@android:drawable/ic_menu_rotate"
+        android:src="@drawable/ic_shuffle"
         app:layout_constraintBottom_toBottomOf="@+id/prevButton"
         app:layout_constraintTop_toTopOf="@id/prevButton"
         app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-        app:layout_constraintStart_toEndOf="@+id/prevButton"
-        app:tint="@android:color/white" />
+        app:layout_constraintStart_toEndOf="@+id/prevButton" />
 
     <ImageButton
         android:id="@+id/imageButton2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        style="@style/FlashcardIconButton"
         android:contentDescription="Delete card"
-        android:src="@android:drawable/ic_menu_delete"
+        android:src="@drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="@+id/shuffleButton"
         app:layout_constraintTop_toTopOf="@id/shuffleButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/shuffleButton"
-        app:tint="@android:color/white" />
+        app:layout_constraintStart_toEndOf="@+id/shuffleButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

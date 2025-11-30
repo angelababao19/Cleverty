@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cleverty">
         <activity
+            android:name=".HelpPage"
+            android:exported="false" />
+        <!-- Your Existing Activities -->
+        <activity
             android:name=".FlashActivity"
             android:exported="false" />
         <activity
@@ -49,7 +53,13 @@
             android:exported="false" />
         <activity
             android:name=".LoginPage"
-            android:exported="false" />
+            android:exported="false" /> <!-- ================================================================= -->
+        <!-- ===================== THIS IS THE ONLY ADDITION ================= -->
+        <!-- This block declares your CongratulationsActivity -->
+        <activity
+            android:name=".CongratulationsActivity"
+            android:exported="false" /> <!-- ================================================================= -->
+        <!-- Your Main Launcher Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">

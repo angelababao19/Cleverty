@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -109,19 +110,31 @@
         </LinearLayout>
 
         <!-- BUTTONS SECTION (no changes here) -->
+        <!-- "Go Back" Button (Styled as an outlined button) -->
         <Button
             android:id="@+id/tryAgainButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Go Back" />
+            android:text="Go Back"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/violet"
+            app:strokeWidth="2dp"
+            android:textAllCaps="false"/>
 
+        <!-- "Review Wrong Answers" Button (Styled as a solid button) -->
         <Button
             android:id="@+id/button2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginTop="8dp"
-            android:text="Review Wrong Answers" />
+            android:backgroundTint="@color/violet"
+            android:text="Review Wrong Answers"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp" />
+
 
     </LinearLayout>
 

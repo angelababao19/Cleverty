@@ -1,37 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="16dp">  <!-- This adds space below each Q&A item -->
+    android:paddingBottom="16dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
 
-    <!-- Question EditText -->
-    <EditText
-        android:id="@+id/questionEt"
+    <!-- Question Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/questionInputLayout"
+        style="@style/Timer.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/square_white_stroke"
-        android:hint="Question"
-        android:layout_marginTop="31dp"
-        android:inputType="textCapSentences|textMultiLine"
-        android:minHeight="48dp"
-        android:padding="12dp"
-        android:textColor="@android:color/white"
-        android:textColorHint="#AFAFAF" />
+        android:layout_marginTop="16dp"
+        android:hint="Question">
 
-    <!-- Answer EditText -->
-    <EditText
-        android:id="@+id/answerEt"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/questionEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="48dp"
+            android:textColor="@android:color/white" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Answer Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/answerInputLayout"
+        style="@style/Timer.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/square_white_stroke"
-        android:hint="Answer"
-        android:inputType="textCapSentences|textMultiLine"
-        android:minHeight="48dp"
-        android:padding="12dp"
-        android:textColor="@android:color/white"
-        android:textColorHint="#AFAFAF" />
+        android:hint="Answer">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/answerEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="48dp"
+            android:textColor="@android:color/white" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

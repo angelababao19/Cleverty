@@ -1,29 +1,44 @@
 package com.example.cleverty;
 
-import android.content.Intent;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.cleverty.model.*;
+
+import com.example.cleverty.model.Subject;
 import java.util.List;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.Holder> {
 
-    public interface OnSubjectClick { void clicked(Subject s); }
-    private final List<Subject> list;
-    private final OnSubjectClick listener;
+    // New Interface to pass clicks back to the Homepage
+    public interface OnSubjectInteractionListener {
+        void onSubjectClicked(Subject s);
+        void onPinClicked(Subject s);
+        void onUnpinClicked(Subject s);
+        void onEditClicked(Subject s);
+        void onDeleteClicked(Subject s);
+    }
 
-    SubjectAdapter(List<Subject> list, OnSubjectClick l){
+    private final List<Subject> list;
+    private final OnSubjectInteractionListener listener;
+
+    SubjectAdapter(List<Subject> list, OnSubjectInteractionListener l) {
         this.list = list;
         this.listener = l;
     }
 
     static class Holder extends RecyclerView.ViewHolder {
         TextView name;
+        ImageView pinIcon;
+
         Holder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.subjectName);
+            pinIcon = itemView.findViewById(R.id.pinIcon);
         }
     }
 
@@ -35,55 +50,49 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.Holder> 
         return new Holder(v);
     }
 
-    /* helper: true if subject is at the top (pinned) */
-    private boolean isPinned(Subject s){
-        return Library.getInstance().getSubjects().indexOf(s) == 0;
-    }
-
     @Override
     public void onBindViewHolder(@NonNull Holder h, int i) {
-        Subject s = list.get(i);
+        final Subject s = list.get(i);
         h.name.setText(s.getTitle());
 
-        /* normal tap - open flash-cards */
-        h.itemView.setOnClickListener(v -> listener.clicked(s));
+        // Show or hide the pin icon
+        h.pinIcon.setVisibility(s.isPinned() ? View.VISIBLE : View.GONE);
 
-        /* long-press - Pin / Unpin / Edit / Delete */
+        // Normal tap - open flash-cards
+        h.itemView.setOnClickListener(v -> listener.onSubjectClicked(s));
+
+        // Long-press - Show the popup menu
         h.itemView.setOnLongClickListener(v -> {
             PopupMenu popup = new PopupMenu(v.getContext(), v);
-            boolean pinned = isPinned(s);
-            popup.getMenu().add(pinned ? "Unpin" : "Pin");   // 1st
-            popup.getMenu().add("Edit");                      // 2nd
-            popup.getMenu().add("Delete");                    // 3rd
+            popup.getMenu().add(s.isPinned() ? "Unpin" : "Pin");
+            popup.getMenu().add("Edit");
+            popup.getMenu().add("Delete");
+
             popup.setOnMenuItemClickListener(item -> {
-                String title = item.getTitle().toString();
-                switch (title) {
+                switch (item.getTitle().toString()) {
                     case "Pin":
-                        Library.getInstance().pinSubject(s);
-                        notifyDataSetChanged();
+                        listener.onPinClicked(s);
                         return true;
                     case "Unpin":
-                        Library.getInstance().getSubjects().remove(s);
-                        Library.getInstance().getSubjects().add(s);
-                        notifyDataSetChanged();
+                        listener.onUnpinClicked(s);
                         return true;
                     case "Edit":
-                        Intent intent = new Intent(v.getContext(), AddCardActivity.class);
-                        intent.putExtra("SUBJECT_POSITION", Library.getInstance().getSubjects().indexOf(s));
-                        v.getContext().startActivity(intent);
+                        listener.onEditClicked(s);
                         return true;
                     case "Delete":
-                        Library.getInstance().getSubjects().remove(s);
-                        notifyDataSetChanged();
-                        ((Homepage)v.getContext()).refreshEmptyState();
+                        listener.onDeleteClicked(s);
                         return true;
                 }
                 return false;
             });
+
             popup.show();
             return true;
         });
     }
 
-    @Override public int getItemCount() { return list.size(); }
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
 }

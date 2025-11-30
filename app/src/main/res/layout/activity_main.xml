@@ -28,23 +28,23 @@
         android:id="@+id/signup_btn"
         android:layout_width="350dp"
         android:layout_height="65dp"
-        android:layout_marginBottom="130dp"
+        android:layout_marginBottom="100dp"
         android:backgroundTint="@color/transparent"
-        app:strokeColor="@color/white"
-        app:strokeWidth="2dp"
-        app:cornerRadius="20dp"
         android:fontFamily="sans-serif"
         android:text="Sign up"
         android:textAllCaps="false"
         android:textColor="#fff"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_btn"
-        app:layout_constraintVertical_bias="0.315" />
+        app:layout_constraintVertical_bias="0.315"
+        app:strokeColor="@color/white"
+        app:strokeWidth="2dp" />
 
     <Button
         android:id="@+id/login_btn"
@@ -61,22 +61,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
-        android:fontFamily="sans-serif"
-        android:text="Continue as a guest ➔"
-        android:textAllCaps="false"
-        android:textColor="#fff"
-        android:textSize="20sp"
-        android:textStyle="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
