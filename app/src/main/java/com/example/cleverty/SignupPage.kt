@@ -10,13 +10,17 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.cleverty.databinding.ActivitySignupPageBinding
+import com.example.cleverty.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class SignupPage : AppCompatActivity() {
 
@@ -26,7 +30,7 @@ class SignupPage : AppCompatActivity() {
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
 
     companion object {
-        private const val TAG = "GoogleAuth"
+        private const val TAG = "Auth"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,16 +47,13 @@ class SignupPage : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
             if (result.resultCode == Activity.RESULT_OK) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 try {
-                    // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
                     Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                    firebaseAuthWithGoogle(account.idToken!!)
+                    firebaseAuthWithGoogle(account) // Pass the whole account object
                 } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
                     binding.progressBar.visibility = View.GONE
                     Log.w(TAG, "Google sign in failed", e)
                     Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -69,25 +70,30 @@ class SignupPage : AppCompatActivity() {
         }
 
         binding.goBack.setOnClickListener {
-            val goBackIntent = Intent(this, MainActivity::class.java)
-            startActivity(goBackIntent)
+            finish() // Just finish the activity to go back
         }
 
         binding.signupBtn.setOnClickListener {
-            val email = binding.signupEmail.text.toString()
-            val password = binding.signupPassword.text.toString()
-            val confirmPassword = binding.signupConfirm.text.toString()
+            val email = binding.signupEmail.text.toString().trim()
+            val password = binding.signupPassword.text.toString().trim()
+            val confirmPassword = binding.signupConfirm.text.toString().trim()
 
             if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
                 if (password == confirmPassword) {
                     binding.progressBar.visibility = View.VISIBLE
-                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-                        binding.progressBar.visibility = View.GONE
-                        if (it.isSuccessful) {
-                            val intent = Intent(this, SignupSuccess::class.java)
-                            startActivity(intent)
+                    // --- THIS ENTIRE BLOCK IS THE FIX ---
+                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val firebaseUser = firebaseAuth.currentUser
+                            if (firebaseUser != null) {
+                                // After successful auth, create the user profile in the Realtime Database
+                                // with a default name because email/pass signup has no name.
+                                createUserProfileInDatabase(firebaseUser, "New User", email)
+                            }
                         } else {
-                            Toast.makeText(this, "Invalid email or password. Please try again.", Toast.LENGTH_SHORT).show()
+                            binding.progressBar.visibility = View.GONE
+                            // Show the actual error message from Firebase
+                            Toast.makeText(this, "Signup Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                         }
                     }
                 } else {
@@ -96,8 +102,8 @@ class SignupPage : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Fields cannot be empty.", Toast.LENGTH_SHORT).show()
             }
-
         }
+
         binding.logintext.setOnClickListener {
             val loginIntent = Intent(this, LoginPage::class.java)
             startActivity(loginIntent)
@@ -109,23 +115,50 @@ class SignupPage : AppCompatActivity() {
         googleSignInLauncher.launch(signInIntent)
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        // We get the idToken from the GoogleSignInAccount object
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
-                binding.progressBar.visibility = View.GONE
                 if (task.isSuccessful) {
-                    // Sign in success
-                    val user = firebaseAuth.currentUser
-                    Toast.makeText(this, "Google Sign-In successful: ${user?.displayName}", Toast.LENGTH_SHORT).show()
-
-                    val intent = Intent(this, SignupSuccess::class.java)
-                    startActivity(intent)
-                    finishAffinity()
+                    val firebaseUser = firebaseAuth.currentUser
+                    if (firebaseUser != null) {
+                        // For Google Sign-In, we have a name from the Google account, so we use it.
+                        // The '?:' is the Elvis operator in Kotlin, a safe way to handle nulls.
+                        createUserProfileInDatabase(firebaseUser, account.displayName ?: "New User", account.email!!)
+                    }
                 } else {
+                    binding.progressBar.visibility = View.GONE
                     Log.w(TAG, "signInWithCredentialFailed", task.exception)
                     Toast.makeText(this, "Authentication Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    // --- NEW HELPER METHOD TO AVOID DUPLICATE CODE ---
+    // This creates the database entry for BOTH email and Google signups.
+    private fun createUserProfileInDatabase(firebaseUser: FirebaseUser, name: String, email: String) {
+        val uid = firebaseUser.uid
+        // Create a User object with an empty string for the profile image URL initially.
+        val user = User(name, email, "")
+
+        // Get a reference to the "users" node in your database
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("users")
+
+        // Save the user object under their unique UID
+        databaseReference.child(uid).setValue(user).addOnCompleteListener { dbTask ->
+            binding.progressBar.visibility = View.GONE
+            if (dbTask.isSuccessful) {
+                // Profile was successfully created in the database, now proceed.
+                Toast.makeText(this, "Signup Successful!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, SignupSuccess::class.java)
+                startActivity(intent)
+                // Clear all previous activities so the user can't go back to the signup flow.
+                finishAffinity()
+            } else {
+                // Handle the case where the database write fails.
+                Toast.makeText(this, "Signup successful, but failed to save profile.", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
